@@ -1,0 +1,32 @@
+# Quartus build products
+db/
+incremental_db/
+output_files/
+*.sof
+*.pof
+*.rpt
+*.summary
+*.qws
+*.qsf.bak
+*.qmsg
+*.smsg
+*.sld
+*.jdi
+*.pin
+*.cdf
+*.done
+
+# ModelSim / Questa
+work/
+transcript
+vsim.wlf
+*.wlf
+modelsim.ini
+
+# Third-party board support IP (obtain independently)
+course_ip/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
