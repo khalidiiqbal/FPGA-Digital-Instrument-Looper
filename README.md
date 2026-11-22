@@ -67,6 +67,19 @@ digital_instrument_looper.*  Quartus project settings
 
 See [build and simulation instructions](docs/BUILD.md) for the peripheral dependencies and reproducible setup. External board-support IP is deliberately omitted from this repository.
 
+## External IP used (University of Toronto)
+
+This design uses **University of Toronto-provided peripheral interface modules** to communicate with the DE1-SoC hardware. These are supporting interfaces—not the custom synthesizer, drum synthesis, mixing, note decoding, or visual-display logic.
+
+| Provided module | Purpose |
+| --- | --- |
+| `PS2_Controller` | Receives PS/2 keyboard scan codes |
+| `Audio_Controller` | Transfers digital audio samples to the board's audio codec |
+| `avconf` | Configures the onboard audio/video hardware over I²C |
+| `vga_adapter` | Handles VGA frame-buffer output and display timing |
+
+**These University of Toronto interface source files are not redistributed in this repository.** They must be obtained separately and added as described in [Build instructions](docs/BUILD.md). All four are explicitly instantiated by the top-level design (directly or through its board interfaces).
+
 ## Development roadmap
 
 - 16-step programmable drum sequencer
