@@ -1,20 +1,30 @@
-# FPGA Digital Instrument Looper — DE1-SoC / Cyclone V 5CSEMA5F31C6
+# FPGA Digital Instrument Looper / DE1-SoC / Cyclone V 5CSEMA5F31C6.
+# Main top: the demonstrated Milestone 2 drum sequencer and live synth.
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSEMA5F31C6
-set_global_assignment -name TOP_LEVEL_ENTITY digital_instrument_top
+set_global_assignment -name TOP_LEVEL_ENTITY digital_instrument_ms2_top
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name SDC_FILE constraints/clock_50.sdc
 set_global_assignment -name MIF_FILE rtl/video/black.mif
 source constraints/de1_soc_pins.qsf
+
+# Custom RTL
+set_global_assignment -name VERILOG_FILE rtl/top/digital_instrument_ms2_top.v
 set_global_assignment -name VERILOG_FILE rtl/top/digital_instrument_top.v
 set_global_assignment -name VERILOG_FILE rtl/top/synth_only_top.v
 set_global_assignment -name VERILOG_FILE rtl/audio/synth_dds.v
 set_global_assignment -name VERILOG_FILE rtl/audio/drum_audio_engine.v
+set_global_assignment -name VERILOG_FILE rtl/audio/drum_audio_engine_looper.v
 set_global_assignment -name VERILOG_FILE rtl/audio/drums/kick_drum.v
 set_global_assignment -name VERILOG_FILE rtl/audio/drums/snare_drum.v
 set_global_assignment -name VERILOG_FILE rtl/audio/drums/hi_hat_drum.v
 set_global_assignment -name VERILOG_FILE rtl/input/ps2_note_decoder.v
+set_global_assignment -name VERILOG_FILE rtl/sequencer/drum_step_clock.v
+set_global_assignment -name VERILOG_FILE rtl/sequencer/drum_pattern_memory.v
 set_global_assignment -name VERILOG_FILE rtl/video/piano_note_display.v
+set_global_assignment -name VERILOG_FILE rtl/video/vga_looper_display.v
+
+# University of Toronto hardware-interface dependencies — supply separately.
 set_global_assignment -name VERILOG_FILE course_ip/PS2_Controller/PS2_Controller.v
 set_global_assignment -name VERILOG_FILE course_ip/PS2_Controller/Altera_UP_PS2_Data_In.v
 set_global_assignment -name VERILOG_FILE course_ip/PS2_Controller/Altera_UP_PS2_Command_Out.v

@@ -1,40 +1,58 @@
-# Build and simulation guide
+# Build and simulation instructions
 
-## Target board
+## Hardware and project
 
-- Board: **Terasic DE1-SoC**
-- FPGA: Intel/Altera Cyclone V SoC, **5CSEMA5F31C6**
-- System clock: `CLOCK_50` (50 MHz)
-- Toolchain used for the uploaded source project: Quartus Prime Lite 18.1, ModelSim
+- **Board:** Terasic DE1-SoC
+- **FPGA:** Intel / Altera Cyclone V SoC **5CSEMA5F31C6**
+- **Clock:** 50 MHz (`CLOCK_50`)
+- **Project:** `digital_instrument_looper.qpf`
+- **Current top-level entity:** `digital_instrument_ms2_top`
+- **Toolchain:** Quartus Prime (project originated with Lite 18.1), ModelSim
 
-## Quartus setup
+## External University of Toronto peripheral IP
 
-1. Obtain the compatible University Program/board-support Verilog modules for `PS2_Controller`, `Audio_Controller`, `avconf`, and `vga_adapter` and their dependencies. They are deliberately excluded from this repository.
-2. Place the files under the `course_ip/` structure referenced by `digital_instrument_looper.qsf`, or update those paths to match your local installation.
-3. Open `digital_instrument_looper.qpf` in Quartus. Select the `digital_instrument_top` module as top level (already configured in the QSF).
-4. The QSF imports physical pins via `constraints/de1_soc_pins.qsf`, and clocks via `constraints/clock_50.sdc`. Confirm the assignments against your hardware.
-5. Run Analysis & Synthesis, then Full Compilation. Review warnings and timing before programming the FPGA.
-6. Program using the newly generated `.sof` from `output_files/`.
+This repository publishes custom instrument RTL but **does not include** the original University of Toronto hardware-interface libraries. The design uses:
 
-These reorganized paths and names have **not** been recompiled after restructuring. The original uploaded project was demonstrated working on a DE1-SoC.
+- `PS2_Controller` with its `Altera_UP_PS2_*` helper modules;
+- `Audio_Controller`, `Audio_Clock`, and `Altera_UP_Audio_*` helpers;
+- `avconf` and `I2C_Controller`;
+- `vga_adapter`, `vga_controller`, `vga_pll` and `vga_address_translator`.
 
-## Simulations
+Obtain authorized copies from your existing DE1-SoC or compatible teaching-library installation. Place them under `course_ip/` in the folders referenced by `digital_instrument_looper.qsf`, or update the paths in that file to your local library locations. Do not replace this project's custom `rtl/` source files with the peripheral libraries.
 
-From the repository root in ModelSim/Questa, run:
+## Compile and program
+
+1. Open `digital_instrument_looper.qpf` in Quartus.
+2. Confirm **Top-level entity = digital_instrument_ms2_top** and **device = 5CSEMA5F31C6**.
+3. Check the imported `constraints/de1_soc_pins.qsf` and `constraints/clock_50.sdc` assignments.
+4. Compile and review errors, timing and ignored-node/pin warnings.
+5. Program the newly compiled `output_files/digital_instrument_looper.sof`.
+6. Connect a PS/2 keyboard, VGA monitor, and board audio output.
+
+The original local Milestone 2 project was tested on the DE1-SoC. The newly organized repository layout **has not been independently compiled or programmed after restructuring**; please verify the repository build locally.
+
+## Controls
+
+| Control | Function |
+| --- | --- |
+| KEY0 | Reset and erase saved patterns |
+| KEY1, KEY2, KEY3 | Kick, snare, hi-hat (also record while SW4 is up and SW3 is running) |
+| SW0–SW1 | Octave |
+| SW2 | Synth waveform |
+| SW3 | Start/stop sequence |
+| SW4 | Enable live recording |
+| SW5 | Clear all patterns on switch rising edge |
+| SW6–SW9 | Tempo: 60–180 BPM |
+
+The VGA screen shows three colored sequencer rows and a moving yellow playhead, with live keyboard-note indicators at the bottom.
+
+## Simulation
+
+From the repository root, run the custom RTL simulations with ModelSim:
 
 ```tcl
 do sim/run_all.do
+do sim/run_milestone2.do
 ```
 
-Each testbench is separate and targets the custom RTL. ModelSim waveforms can be displayed by adding signal paths for the corresponding testbench.
-
-## User controls
-
-- PS/2 keyboard: play musical notes
-- KEY[1]: kick; KEY[2]: snare; KEY[3]: hi-hat
-- KEY[0]: active-low reset
-- SW[1:0]: octave; SW[2]: square/triangle selection
-
-## Core interfaces
-
-The FPGA-design top module, DDS synthesizer, keyboard decoder, drum engines, mixer and VGA piano renderer are in `rtl/`. The third-party controller modules are **not** included here.
+Both scripts depend on the Verilog testbench files in `sim/`; the Milestone 2 script tests step timing, recording and playback, integrated drum triggers and VGA pixel output. These unit simulations do not require the third-party board-support IP.
